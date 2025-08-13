@@ -141,8 +141,7 @@ javac ImplementMoves.java AvailableMoves.java bfs.java
 
 ### Run — ImplementMoves
 ```bash
-echo -e "1857#3462
-LEFT" | java ImplementMoves
+echo -e "1857#3462\nLEFT" | java ImplementMoves
 ```
 
 ### Run — AvailableMoves
@@ -152,10 +151,44 @@ echo "1857#3462" | java AvailableMoves
 
 ### Run — bfs (BFS)
 ```bash
-echo -e "78651#432
-12345678#" | java bfs
+echo -e "78651#432\n12345678#" | java bfs
 # -> 25
 ```
+
+---
+
+## Experiment: BFS Complexity vs Solution Depth (k)
+
+This project includes an optional experiment that studies how the time and space usage of BFS scale with the optimal solution depth `k`.
+
+### What it does
+- **Generate start states at exact depth `k`** from the solved board (`12345678#`) using a **self‑avoiding random walk** (no revisits, uniform sampling among legal moves). This guarantees solvability and targets a specific depth.
+- **Solve with BFS** back to the goal, recording:
+  - **Time**: wall‑clock from BFS start to solution.
+  - **Space**: number of **nodes expanded** (dequeued from the frontier).
+- **Repeat 5 trials per `k`** and compute **mean ± 2σ** for both metrics.
+
+### Java runner
+- **`BFSExperiment.java`** — Generates instances for `k ∈ {2,4,6,8,10,12,14,16,18,20}` (configurable), runs BFS, and writes:
+  - `experiment_results.csv` — raw records for every trial.
+  - `experiment_aggregate.csv` — aggregated statistics (mean & 2σ for time and nodes per `k`).
+
+**Build & run**
+```bash
+javac ImplementMoves.java AvailableMoves.java bfs.java BFSExperiment.java
+java BFSExperiment
+# -> writes experiment_results.csv and experiment_aggregate.csv
+```
+
+**Plotting**
+- Import the CSVs into Excel/Google Sheets, and create error‑bar plots of **mean ± 2σ** for:
+  - Time (seconds) vs `k`
+  - Nodes expanded vs `k`
+
+> Tip: The results should exhibit near‑exponential growth consistent with BFS complexity on unit‑cost graphs (≈ O(b^k)).
+
+### Attribution
+The **experiment driver code** (only) was generated with **ChatGPT 5** and is used **solely** to study time/space complexity and to test the new **GPT‑5** model. The core puzzle logic and BFS solver remain authored within this project.
 
 ---
 
