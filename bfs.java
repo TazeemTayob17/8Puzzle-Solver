@@ -5,10 +5,12 @@ import java.util.HashMap;
 
 public class bfs {
 
-    public static int search(String start, String goal){
-        //Trivial cases
-        if (start == null || goal == null) return -1;
-        if (start.equals(goal)) return 0;
+    public static int search(String start, String goal) {
+        // Trivial cases
+        if (start == null || goal == null)
+            return -1;
+        if (start.equals(goal))
+            return 0;
 
         // Standard BFS
         ArrayDeque<String> queue = new ArrayDeque<>();
@@ -25,16 +27,17 @@ public class bfs {
 
             for (String move : moves) {
                 // Use your ImplementMoves to generate the child state
-                int index = ImplementMoves.getIndex(cur, move);  // returns -1 if illegal (shouldn't happen here)
-                if (index == -1) continue;
+                int index = ImplementMoves.getIndex(cur, move); // returns -1 if illegal (shouldn't happen here)
+                if (index == -1)
+                    continue;
                 String next = ImplementMoves.implementMove(cur, index);
 
                 if (!dist.containsKey(next)) {
                     dist.put(next, d + 1);
                     if (next.equals(goal)) {
-                        return d+1; // shortest cost found
-                        //System.out.println(d + 1); 
-                        //return;
+                        return d + 1; // shortest cost found
+                        // System.out.println(d + 1);
+                        // return;
                     }
                     queue.add(next);
                 }
