@@ -18,7 +18,7 @@ Each program in this repo reads from **stdin** and prints a single result to **s
 - **UCS.java** — **Uniform-Cost Search / Dijkstra** with a configurable cost model. Default: `UP = 5`, others `= 1` (toggle to uniform if desired).  
 - **GreedyBFS.java** — **Greedy Best-First Search** using **Manhattan** heuristic (sum of tile distances to goal; not guaranteed optimal).  
 - **AStar.java** — **A\*** with **f = g + h** and the **Manhattan** heuristic (optimal under unit-cost moves).  
-- **Experiment.java** — Generates start states exactly `k` moves from `12345678#` and benchmarks **GreedyBFS** and **A\*** with both **Manhattan** and **Euclidean** heuristics. Emits CSV for plotting time and space complexity.
+- **Experiments** — This folder contains 2 experiments, with reports, that I performed on the different search algorithms
 
 > State encoding: a 9-character string in row-major order, e.g., `12345678#`.  
 > Programs read the **start** and **goal** states on two separate lines unless otherwise noted.
@@ -35,8 +35,7 @@ Each program in this repo reads from **stdin** and prints a single result to **s
 ├── UCS.java                  # Uniform-Cost Search (UP can be cost 5; toggleable)
 ├── GreedyBFS.java            # Greedy Best-First (priority = h only, Manhattan)
 ├── AStar.java                # A* (f = g + h, Manhattan)
-├── Experiment.java           # Complexity study & CSV output (GBFS/A*; Manhattan/Euclidean)
-├── reports/                  # PDFs/plots generated from experiments (optional)
+├── Experiments/                  # PDFs/plots generated from experiments 
 └── README.md                 # This file
 ```
 
@@ -165,7 +164,7 @@ javac ImplementMoves.java AvailableMoves.java bfs.java
 javac UCS.java GreedyBFS.java AStar.java
 
 # Compile experiment (optional)
-javac Experiment.java
+javac Experiment2.java
 ```
 
 **Run — ImplementMoves**
@@ -200,9 +199,33 @@ echo -e "5#1742638\n524316#87" | java AStar
 
 ---
 
-## Experiment: Complexity vs Solution Depth (k)
+## Experiment 1: BFS Complexity vs Solution Depth (k)
 
-**Experiment.java** explores how time/space scale as the **solution depth `k`** increases.
+This project includes an optional experiment that studies how the time and space usage of BFS scale with the optimal solution depth `k`.
+
+### What it does
+- **Generate start states at exact depth `k`** from the solved board (`12345678#`) using a **self‑avoiding random walk** (no revisits, uniform sampling among legal moves). This guarantees solvability and targets a specific depth.
+- **Solve with BFS** back to the goal, recording:
+  - **Time**: wall‑clock from BFS start to solution.
+  - **Space**: number of **nodes expanded** (dequeued from the frontier).
+- **Repeat 5 trials per `k`** and compute **mean ± 2σ** for both metrics.
+
+### Java runner
+- **`BFSExperiment.java`** — Generates instances for `k ∈ {2,4,6,8,10,12,14,16,18,20}` (configurable), runs BFS, and writes:
+  - `experiment_results.csv` — raw records for every trial.
+  - `experiment_aggregate.csv` — aggregated statistics (mean & 2σ for time and nodes per `k`).
+
+**Build & run**
+```bash
+javac ImplementMoves.java AvailableMoves.java bfs.java BFSExperiment.java
+java BFSExperiment
+# -> writes experiment_results.csv and experiment_aggregate.csv
+```
+
+
+## Experiment 2: Complexity vs Solution Depth (k)
+
+**Experiment2.java** explores how time/space scale as the **solution depth `k`** increases.
 
 - **Start distribution:** generate states **exactly `k` moves** from the solved board (`12345678#`) via level-order BFS from the goal (guarantees correct depth and solvability).  
 - **Algorithms & heuristics:** benchmark **GreedyBFS** and **A\*** with **Manhattan** and **Euclidean** heuristics.  
@@ -215,8 +238,8 @@ echo -e "5#1742638\n524316#87" | java AStar
 
 **Run**
 ```bash
-javac Experiment.java
-java Experiment > results.csv
+javac Experiment2.java
+java Experiment2 > Experiment2-results.csv
 ```
 
 CSV schema:
@@ -268,4 +291,9 @@ start=5#1742638, goal=524316#87  --> 19
 
 ## Reports
 
-This repository includes **reports/plots** summarizing the experiment results (time, nodes expanded, peak space) with **mean ± 2σ** across depths `k`. Reproduce by running `Experiment.java` and plotting `results.csv` in your tool of choice.
+This repository includes **reports/plots** summarizing the experiment results (time, nodes expanded, peak space) with **mean ± 2σ** across depths `k`. Reproduce by running `Experiment2.java` and plotting `Experiment2-results.csv` in your tool of choice.
+
+### Attribution
+The Experiment programs (only) were generated with **ChatGPT 5** and is used **solely** to study time/space complexity and to test the new **GPT‑5** model. The core puzzle logic and various search algorithm solvers remain authored within this project.
+
+
